@@ -1,15 +1,16 @@
 import React from 'react';
-import './App.css';
+import styles from './App.less';
 import {store} from '@store'
 import {getPersistor} from '@rematch/persist'
+import { Button } from 'antd'
+
 import {PersistGate} from 'redux-persist/es/integration/react'
 const persistor = getPersistor()
-
 function App() {
     return (
         <PersistGate persistor={persistor}>
-            <div className="App">
-                123
+            <div className={styles.abc}>
+                <Button type="primary">123</Button>
             </div>
         </PersistGate>
     );

@@ -7,3 +7,4 @@
 6. 引入@rematch/persist，通过rematch进行加载自动关联到local，实现rematch数据持久化
 7. 加入less支持，并配置antd按需加载，注意新版的less（6+），多了一个参数lessOptions
 8. 加入node-sass 并配置实现alifd/next 按需加载
+9. 测试实现了简单的 alifd自定义主题的按需加载，并与antd按需加载共存，一个基于scss 一个基于less

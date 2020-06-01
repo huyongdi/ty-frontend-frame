@@ -24,7 +24,7 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-
+const ThemePlugin = require('@alifd/next-theme-webpack-plugin');
 const postcssNormalize = require('postcss-normalize');
 
 const appPackageJson = require(paths.appPackageJson);
@@ -43,6 +43,9 @@ const imageInlineSizeLimit = parseInt(
 
 // Check if TypeScript is setup
 const useTypeScript = fs.existsSync(paths.appTsConfig);
+
+// 自定义theme
+const tyTheme = '@alifd/theme-14259'
 
 // style files regexes
 const cssRegex = /\.css$/;
@@ -69,7 +72,7 @@ module.exports = function(webpackEnv) {
   const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 
   // common function to get style loaders
-  const getStyleLoaders = (cssOptions, preProcessor) => {
+  const getStyleLoaders = (cssOptions, preProcessor, isScss) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -122,12 +125,30 @@ module.exports = function(webpackEnv) {
           loader: require.resolve(preProcessor),
           options: {
             sourceMap: true,
-            // lessOptions: {
-            //   javascriptEnabled: true,
-            // }
+            lessOptions: {
+              javascriptEnabled: true,
+            }
           },
-        }
+        },
       );
+      if (isScss) { // 增加@alifd/next-theme-XXX的主题配置
+        loaders.push({
+          // 添加 @alifd/next-theme-loader，引入自定义主题样式对应的 scss 变量
+          loader: require.resolve('@alifd/next-theme-loader'),
+          // loader: '@alifd/next-theme-loader',
+          options: {
+            theme: tyTheme,
+            // 基准包，默认是@alifd/next
+            base: '@alifd/next',
+            // 注入变量，来编译组件样式
+            // 支持 Object 和 String ， 如果是 String 请写绝对路径 例如: modifyVars: path.join(__dirname, 'variable.scss')
+            // 以下为Object
+            // modifyVars: {
+            //   '$css-prefix': '"myprefix-"',
+            // },
+          },
+        })
+      }
     }
     return loaders;
   };
@@ -374,7 +395,7 @@ module.exports = function(webpackEnv) {
                 customize: require.resolve(
                   'babel-preset-react-app/webpack-overrides'
                 ),
-                
+
                 plugins: [
                   [
                     require.resolve('babel-plugin-named-asset-import'),
@@ -418,7 +439,7 @@ module.exports = function(webpackEnv) {
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
                 cacheCompression: false,
-                
+
                 // Babel sourcemaps are needed for debugging into node_modules
                 // code.  Without the options below, debuggers like VSCode
                 // show incorrect code and set breakpoints on the wrong lines.
@@ -466,10 +487,11 @@ module.exports = function(webpackEnv) {
               exclude: sassModuleRegex,
               use: getStyleLoaders(
                 {
-                  importLoaders: 3,
+                  importLoaders: 4,
                   sourceMap: isEnvProduction && shouldUseSourceMap,
                 },
-                'sass-loader'
+                'fast-sass-loader',
+                  true
               ),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
@@ -690,6 +712,21 @@ module.exports = function(webpackEnv) {
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
         }),
+
+      // 添加 @alifd/next-theme-webpack-plugin，引入 normalize 样式以及自定义 icon 定义
+      new ThemePlugin({
+        theme: tyTheme,
+        // 基准包，默认是@alifd/next
+        libraryName: '@alifd/next',
+        // 是否将内置的normalize样式添加到最终的样式包中，默认为true
+        prependNormalizeCSS: true,
+        // 注入变量，来编译normalize和icon样式
+        // 支持 Object 和 String ， 如果是 String 请写绝对路径 例如: modifyVars: path.join(__dirname, 'variable.scss')
+        // 以下为Object
+        modifyVars: {
+          '$css-prefix': '"myprefix-"',
+        },
+      }),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell webpack to provide empty mocks for them so importing them works.

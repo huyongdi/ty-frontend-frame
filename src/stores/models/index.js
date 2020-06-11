@@ -1,2 +1,2 @@
-export test from './test'
-export test2 from './test2'
+export home from './home'
+export home2 from './home2'

@@ -318,6 +318,7 @@ module.exports = function(webpackEnv) {
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         'react-native': 'react-native-web',
         '@store': paths.models,
+        '@pages': paths.pages,
         // Allows for better profiling with ReactDevTools
         ...(isEnvProductionProfile && {
           'react-dom$': 'react-dom/profiling',
@@ -409,7 +410,6 @@ module.exports = function(webpackEnv) {
                     },
                   ],
                   '@babel/plugin-proposal-export-default-from',
-
                 ],
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/

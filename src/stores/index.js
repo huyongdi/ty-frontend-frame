@@ -13,6 +13,14 @@ const store = init({
     models,
     plugins: [persistPlugin]
 })
+
+if (module.hot) {
+    console.log(555);
+    module.hot.accept('./models', () => {
+        store.replaceReducer(require('./models/index'))
+    })
+}
+
 const {dispatch, getState} = store
 export {
     store,

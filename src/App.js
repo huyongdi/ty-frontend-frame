@@ -2,24 +2,24 @@ import React from 'react';
 import styles from './App.less';
 import {store} from '@store'
 import {getPersistor} from '@rematch/persist'
-import { Button } from 'antd'
-import { Input } from '@alifd/next';
-
 import {PersistGate} from 'redux-persist/es/integration/react'
+// import { Button } from 'antd'
+// import { Input } from '@alifd/next';
+import {Router, Link} from "@reach/router";
+import Header from "./components/Header/";
+import PageRouter from './components/PageRouter'
+import {Provider} from 'react-redux'
+
 const persistor = getPersistor()
 
 function App() {
     return (
-        <PersistGate persistor={persistor}>
-            <div className={styles.abc}>
-                <Button type="primary">123</Button>
-                <Input state="success"
-                       size="small"
-                       value="success"
-                       aria-live="assertive"
-                       aria-label="success"/><br/><br/>
-            </div>
-        </PersistGate>
+        <Provider store={store}>
+            <PersistGate persistor={persistor}>
+                <Header/>
+                <PageRouter/>
+            </PersistGate>
+        </Provider>
     );
 }
 

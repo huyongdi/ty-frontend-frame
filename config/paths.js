@@ -1,4 +1,4 @@
-'use strict';
+
 
 const path = require('path');
 const fs = require('fs');
@@ -66,7 +66,8 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrlOrPath,
   // 自定义路径
-  models: resolveApp('src/stores')
+  models: resolveApp('src/stores'),
+  pages: resolveApp('src/pages'),
 };
 
 
